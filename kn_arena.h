@@ -46,8 +46,14 @@ KN_ARENA_DEF void *kn_arena_alloc(Arena *arena, size_t size);
 
 KN_ARENA_DEF void kn_arena_reset(Arena *arena);
 
+// free's the entire arena and sets the arena ptr to NULL
 KN_ARENA_DEF void kn_arena_free(Arena *arena);
 
+// only used with init
+KN_ARENA_DEF void kn_arena_set_allocator_std(Arena *arena, size_t align);
+
+// only used with init
+KN_ARENA_DEF void kn_arena_set_allocator_aligned(Arena *arena, size_t align);
 
 #endif // KN_INCLUDE_KN_ARENA_H
 
@@ -68,6 +74,7 @@ static Region *kn_new_region(Arena *arena, size_t capacity) {
 
 KN_ARENA_DEF Arena *kn_arena_init(void *allocator_fptr, size_t alignment, size_t capacity) {
 	Arena *out = malloc(sizeof(Arena));
+	assert(out);
 	size_t _alignment = ((alignment >= KN_ARENA_MIN_ALIGNMENT) && ((_mm_popcnt_u64(alignment)) == 1)) ? alignment : 64;
 	size_t misalignment = capacity & (_alignment - 1);
 	size_t _capacity = (misalignment == 0) ? capacity : capacity + _alignment - misalignment;
@@ -123,7 +130,6 @@ static Region *kn_new_region_std(Arena *arena, size_t capacity) {
 	return new;
 }
 
-// TODO: void kn_arena_free(Arena *arena)
 static void kn_arena_free_std(Arena *arena) {
 	Region *next = arena->begin;
 	Region *current = NULL;
@@ -136,7 +142,6 @@ static void kn_arena_free_std(Arena *arena) {
 	arena->end = NULL;
 }
 
-// TODO: void *kn_arena_alloc(Arena *arena, size_t size)
 static void *kn_arena_alloc_std(Arena *arena, size_t size) {
 	assert(arena);
 	assert(arena->begin);
@@ -166,12 +171,11 @@ static void *kn_arena_alloc_aligned(Arena *arena, size_t size) {
 	return result;
 }
 
-// TODO: void kn_arena_reset(Arena *arena)
 static void kn_arena_reset_std(Arena *arena) {
 	arena->begin->count = 0;
 }
 
-// static void kn_arena_resize_std(Arena *arena, size_t new_size) {
+// TODO: static void kn_arena_resize_std(Arena *arena, size_t new_size) {
 // }
 
 KN_ARENA_DEF void kn_arena_set_allocator_std(Arena *arena, size_t align) {
