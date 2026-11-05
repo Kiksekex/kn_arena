@@ -1,3 +1,18 @@
+/* kn_arena - v0.1
+ *
+ * This is a simple single file library/module.
+ *Do this:
+      #define KN_ARENA_IMPLEMENTATION
+   before you include this file in *one* C or C++ file to create the implementation.
+
+   // i.e. it should look like this:
+   #include ...
+   #include ...
+   #include ...
+   #define KN_ARENA_IMPLEMENTATION
+   #include "kn_arena.h"
+*/
+
 #ifndef KN_INCLUDE_KN_ARENA_H
 #define KN_INCLUDE_KN_ARENA_H
 
